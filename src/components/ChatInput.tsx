@@ -39,6 +39,24 @@ export const ChatInput = ({ onSend, disabled }: ChatInputProps) => {
   return (
     <form onSubmit={handleSubmit} className="flex gap-2 p-4 border-t">
       <div className="relative flex-1">
+        {imagePreview && (
+          <div className="mb-2 flex items-center">
+            <img
+              src={imagePreview}
+              alt="Preview"
+              className="h-12 w-12 object-cover rounded border mr-2"
+            />
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => setImagePreview(null)}
+              className="text-xs px-2"
+            >
+              Remove
+            </Button>
+          </div>
+        )}
         <Input
           value={message}
           onChange={(e) => setMessage(e.target.value)}
