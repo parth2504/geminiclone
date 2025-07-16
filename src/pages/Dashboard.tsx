@@ -8,11 +8,16 @@ import { DeleteChatroomAlert } from "@/components/DeleteChatroomAlert";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 const Dashboard = () => {
-  const { chatrooms, deleteChatroom } = useChatStore();
+  const { chatrooms } = useChatStore();
   const { phoneNumber, logout } = useAuthStore();
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [chatroomToDelete, setChatroomToDelete] = useState<string | null>(null);
+
+  const formatDate = (date: Date | string) => {
+    const dateObj = date instanceof Date ? date : new Date(date);
+    return dateObj.toLocaleDateString();
+  };
 
   return (
     <>
@@ -45,7 +50,7 @@ const Dashboard = () => {
               <div>
                 <h3 className="font-medium">{chatroom.title}</h3>
                 <p className="text-sm text-muted-foreground">
-                  Created: {chatroom.createdAt.toLocaleDateString()}
+                  Created: {formatDate(chatroom.createdAt)}
                 </p>
               </div>
               <Button

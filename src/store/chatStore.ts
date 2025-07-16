@@ -44,6 +44,20 @@ export const useChatStore = create<ChatState>()(
     {
       name: "chat-storage",
       storage: createJSONStorage(() => localStorage),
+      // Add this reviver function to properly deserialize Dates
+      deserialize: (str) => {
+        const parsed = JSON.parse(str);
+        return {
+          ...parsed,
+          state: {
+            ...parsed.state,
+            chatrooms: parsed.state.chatrooms.map((chatroom: any) => ({
+              ...chatroom,
+              createdAt: new Date(chatroom.createdAt),
+            })),
+          },
+        };
+      },
     }
   )
 );
