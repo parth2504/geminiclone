@@ -20,10 +20,12 @@ interface Chatroom {
 interface ChatState {
   chatrooms: Chatroom[];
   isLoading: boolean;
+  isSending: boolean;
   createChatroom: (title: string) => void;
   deleteChatroom: (id: string) => void;
   loadChatrooms: () => Promise<void>;
-  addMessage: (chatroomId: string, message: Omit<Message, 'id'>) => void;
+  addMessage: (chatroomId: string, message: Omit<Message, 'id'>) => Promise<void>;
+  loadMoreMessages: (chatroomId: string) => Promise<void>;
 }
 
 export const useChatStore = create<ChatState>()(
@@ -31,6 +33,7 @@ export const useChatStore = create<ChatState>()(
     (set, get) => ({
       chatrooms: [],
       isLoading: false,
+      isSending: false,
       createChatroom: (title: string) => {
         if (!title.trim()) {
           showError("Chatroom title cannot be empty.");
@@ -67,7 +70,10 @@ export const useChatStore = create<ChatState>()(
           isLoading: false 
         });
       },
-      addMessage: (chatroomId: string, message: Omit<Message, 'id'>) => {
+      addMessage: async (chatroomId: string, message: Omit<Message, 'id'>) => {
+        set({ isSending: true });
+        
+        // Add user message immediately
         set({
           chatrooms: get().chatrooms.map(chatroom => 
             chatroom.id === chatroomId
@@ -80,6 +86,56 @@ export const useChatStore = create<ChatState>()(
                 }
               : chatroom
           )
+        });
+
+        // Simulate AI thinking delay (throttling)
+        await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 2000));
+        
+        // Add AI response
+        set({
+          chatrooms: get().chatrooms.map(chatroom => 
+            chatroom.id === chatroomId
+              ? {
+                  ...chatroom,
+                  messages: [
+                    ...chatroom.messages,
+                    { 
+                      id: Date.now().toString(),
+                      content: `I'm your simulated AI response to: "${message.content}"`,
+                      isUser: false,
+                      timestamp: new Date()
+                    }
+                  ]
+                }
+              : chatroom
+          ),
+          isSending: false
+        });
+      },
+      loadMoreMessages: async (chatroomId: string) => {
+        const chatroom = get().chatrooms.find(c => c.id === chatroomId);
+        if (!chatroom) return;
+
+        set({ isLoading: true });
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        const olderMessages = [...Array(5)].map((_, i) => ({
+          id: `old-${Date.now()}-${i}`,
+          content: `Older message ${i + 1}`,
+          isUser: Math.random() > 0.5,
+          timestamp: new Date(Date.now() - (1000 * 60 * 60 * 24 * 7)), // 1 week ago
+        }));
+
+        set({
+          chatrooms: get().chatrooms.map(chatroom => 
+            chatroom.id === chatroomId
+              ? {
+                  ...chatroom,
+                  messages: [...olderMessages, ...chatroom.messages]
+                }
+              : chatroom
+          ),
+          isLoading: false
         });
       },
     }),

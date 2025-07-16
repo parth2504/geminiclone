@@ -10,6 +10,7 @@ interface AuthState {
   logout: () => void;
   verifyOtp: (otp: string) => Promise<boolean>;
   sendOtp: () => Promise<void>;
+  resetAuth: () => void;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -20,6 +21,7 @@ export const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
       login: (phone, code) => set({ phoneNumber: phone, countryCode: code }),
       logout: () => set({ isAuthenticated: false }),
+      resetAuth: () => set({ phoneNumber: "", countryCode: "+1", isAuthenticated: false }),
       verifyOtp: async (otp) => {
         return new Promise((resolve) => {
           setTimeout(() => {
