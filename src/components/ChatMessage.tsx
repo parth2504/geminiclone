@@ -52,7 +52,7 @@ export const ChatMessage = ({
           <img
             src={imageUrl}
             alt="Uploaded content"
-            className="rounded-lg mb-2 max-w-full h-auto"
+            className="rounded-lg mb-2 max-w-full h-auto max-h-64 object-contain"
           />
         )}
         <p className="whitespace-pre-wrap">{content}</p>
