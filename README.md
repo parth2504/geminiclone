@@ -15,8 +15,8 @@ A responsive Gemini-style chat application with OTP authentication, chatroom man
 
 ## Technologies Used
 
-- React with TypeScript
-- React Router
+- Next.js with App Router
+- TypeScript
 - Zustand for state management
 - React Hook Form + Zod for form validation
 - Tailwind CSS for styling
@@ -28,10 +28,6 @@ A responsive Gemini-style chat application with OTP authentication, chatroom man
 1. Clone the repository
 2. Install dependencies: `npm install`
 3. Run the development server: `npm run dev`
-
-## Deployment
-
-The app is deployed on Vercel: [Live Demo](#) (replace with your deployment URL)
 
 ## Implementation Details
 
