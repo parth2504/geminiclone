@@ -1,8 +1,18 @@
-// ... (previous imports)
+import { PlusCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useChatStore } from "@/store/chatStore";
+import { useAuthStore } from "@/store/authStore";
+import { useState } from "react";
+import { CreateChatroomDialog } from "@/components/CreateChatroomDialog";
+import { DeleteChatroomAlert } from "@/components/DeleteChatroomAlert";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 const Dashboard = () => {
-  // ... (previous code)
+  const { chatrooms, deleteChatroom } = useChatStore();
+  const { phoneNumber, logout } = useAuthStore();
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [chatroomToDelete, setChatroomToDelete] = useState<string | null>(null);
 
   return (
     <>
@@ -25,9 +35,43 @@ const Dashboard = () => {
             </Button>
           </div>
         </header>
-        {/* ... rest of the component */}
+
+        <div className="grid gap-4">
+          {chatrooms.map((chatroom) => (
+            <div
+              key={chatroom.id}
+              className="flex items-center justify-between p-4 border rounded-lg hover:bg-accent"
+            >
+              <div>
+                <h3 className="font-medium">{chatroom.title}</h3>
+                <p className="text-sm text-muted-foreground">
+                  Created: {chatroom.createdAt.toLocaleDateString()}
+                </p>
+              </div>
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={() => {
+                  setChatroomToDelete(chatroom.id);
+                  setDeleteDialogOpen(true);
+                }}
+              >
+                Delete
+              </Button>
+            </div>
+          ))}
+        </div>
       </div>
-      {/* ... dialogs */}
+
+      <CreateChatroomDialog
+        isOpen={createDialogOpen}
+        onOpenChange={setCreateDialogOpen}
+      />
+      <DeleteChatroomAlert
+        isOpen={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        chatroomId={chatroomToDelete}
+      />
     </>
   );
 };
