@@ -7,7 +7,7 @@ import { useAuthStore } from "./store/authStore";
 import Login from "./pages/Login";
 import Otp from "./pages/Otp";
 import Dashboard from "./pages/Dashboard";
-import Chatroom from "./pages/Chatroom";
+import Chatroom from "./pages/Chatroom"; // This import should work now
 
 const queryClient = new QueryClient();
 
