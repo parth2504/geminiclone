@@ -25,12 +25,13 @@ export const useAuthStore = create<AuthState>()(
       verifyOtp: async (otp) => {
         return new Promise((resolve) => {
           setTimeout(() => {
-            if (otp === "123456") {
+            // Accept any 6-digit number as valid OTP
+            if (/^\d{6}$/.test(otp)) {
               set({ isAuthenticated: true });
               showSuccess("OTP verified successfully!");
               resolve(true);
             } else {
-              showError("Invalid OTP. Please try again.");
+              showError("Invalid OTP. Please enter a 6-digit number.");
               resolve(false);
             }
           }, 1500);
