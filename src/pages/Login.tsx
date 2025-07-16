@@ -28,8 +28,13 @@ const formSchema = z.object({
   countryCode: z.string(),
 });
 
+interface Country {
+  name: string;
+  code: string;
+}
+
 const Login = () => {
-  const [countries, setCountries] = useState([]);
+  const [countries, setCountries] = useState<Country[]>([]);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { login, sendOtp, countryCode } = useAuthStore();
@@ -48,14 +53,24 @@ const Login = () => {
         const response = await fetch("https://restcountries.com/v3.1/all");
         const data = await response.json();
         const formattedCountries = data
+          .filter((country: any) => country.idd?.root && country.idd?.suffixes)
           .map((country: any) => ({
             name: country.name.common,
-            code: `+${country.idd.root}${country.idd.suffixes[0]}`,
+            code: `${country.idd.root}${country.idd.suffixes[0]}`,
           }))
-          .sort((a: any, b: any) => a.name.localeCompare(b.name));
+          .sort((a: Country, b: Country) => a.name.localeCompare(b.name));
         setCountries(formattedCountries);
       } catch (error) {
         showError("Failed to fetch countries");
+        console.error("Error fetching countries:", error);
+        // Fallback to some common country codes
+        setCountries([
+          { name: "United States", code: "+1" },
+          { name: "United Kingdom", code: "+44" },
+          { name: "India", code: "+91" },
+          { name: "Japan", code: "+81" },
+          { name: "Germany", code: "+49" },
+        ]);
       }
     };
 
@@ -92,14 +107,19 @@ const Login = () => {
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
+                    disabled={countries.length === 0}
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select country code" />
+                        <SelectValue placeholder={
+                          countries.length === 0 
+                            ? "Loading countries..." 
+                            : "Select country code"
+                        } />
                       </SelectTrigger>
                     </FormControl>
-                    <SelectContent>
-                      {countries.map((country: any) => (
+                    <SelectContent className="max-h-[300px] overflow-y-auto">
+                      {countries.map((country) => (
                         <SelectItem key={country.code} value={country.code}>
                           {country.name} ({country.code})
                         </SelectItem>
